@@ -1,0 +1,98 @@
+<div class="outreach-dashboard pipeline-dashboard">
+  <nav class="outreach-nav">
+    <%= link_to "Pipeline", pipeline_path, class: "nav-link nav-link--active" %>
+    <%= link_to "Reviews", reviews_path, class: "nav-link" %>
+    <%= link_to "Bulk Import", new_bulk_import_path, class: "nav-link" %>
+  </nav>
+
+  <header class="outreach-header">
+    <h1>Outreach Pipeline</h1>
+    <p>Prospects go through: research (scrape + AI) → enrichment (RocketReach) → generation (email draft).</p>
+    <% in_progress_statuses = %w[pending researching researched enriching enriched].freeze %>
+    <% processing_count = (@status_counts || {}).values_at(*in_progress_statuses).compact.sum %>
+    <% if @status_counts.present? %>
+      <div class="pipeline-summary">
+        <% ready = @status_counts['ready_for_review'] || 0 %>
+        <% processing = in_progress_statuses.sum { |s| @status_counts[s] || 0 } %>
+        <% failed = (@status_counts['failed'] || 0) + (@status_counts['disqualified'] || 0) + (@status_counts['enrichment_failed'] || 0) + (@status_counts['out_of_credits'] || 0) %>
+        <span class="summary-item summary--ready"><%= ready %> ready</span>
+        <span class="summary-item summary--processing">
+          <%= processing %> processing
+          <% if processing > 0 %><span class="spinner" title="Working..."></span><% end %>
+        </span>
+        <% if failed > 0 %>
+          <span class="summary-item summary--failed"><%= failed %> failed/skipped</span>
+        <% end %>
+      </div>
+    <% end %>
+    <% if processing_count && processing_count > 0 %>
+      <p class="refresh-hint">
+        <span id="pipelineCountdown">3</span>s until refresh · <%= Time.current.strftime('%H:%M:%S') %>
+      </p>
+    <% end %>
+  </header>
+
+  <% if @prospects.empty? %>
+    <div class="outreach-empty">
+      <p>No prospects in the pipeline.</p>
+      <p><%= link_to "Import URLs", new_bulk_import_path %> to get started.</p>
+    </div>
+  <% else %>
+    <div class="outreach-card">
+      <table class="pipeline-table">
+        <thead>
+          <tr>
+            <th>Prospect</th>
+            <th>Status</th>
+            <th>Score</th>
+            <th>Signals</th>
+            <th>URL</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @prospects.each do |prospect| %>
+            <tr class="<%= 'row--processing' if in_progress_statuses.include?(prospect.status) %>">
+              <td>
+                <%= prospect.display_label %>
+              </td>
+              <td>
+                <span class="status-badge status--<%= prospect.status %>">
+                  <% if in_progress_statuses.include?(prospect.status) %><span class="spinner spinner--sm"></span><% end %>
+                  <%= prospect.status.humanize %>
+                </span>
+              </td>
+              <td>
+                <% if prospect.look_alike_score.present? %>
+                  <%= prospect.look_alike_score %>
+                  <% if prospect.priority.present? %><br><span class="muted"><%= prospect.priority %></span><% end %>
+                <% else %>—<% end %>
+              </td>
+              <td class="muted"><%= prospect.signals_detected.presence || "—" %></td>
+              <td><a href="<%= prospect.url %>" target="_blank" rel="noopener"><%= prospect.url.truncate(50) %></a></td>
+              <td class="muted"><%= prospect.failure_reason.presence || "—" %></td>
+              <td>
+                <% if %w[researching enriched enrichment_failed failed disqualified].include?(prospect.status) || prospect.research_failed? %>
+                  <%= button_to "Retry", pipeline_retry_path(prospect.id), method: :post, class: "btn-outline" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <% if processing_count && processing_count > 0 %>
+    <script>
+      (function() {
+        var c = 3, el = document.getElementById('pipelineCountdown');
+        var i = setInterval(function() {
+          c--; if (el) el.textContent = c;
+          if (c <= 0) { clearInterval(i); location.reload(); }
+        }, 1000);
+      })();
+    </script>
+  <% end %>
+</div>

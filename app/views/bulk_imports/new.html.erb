@@ -1,0 +1,45 @@
+<div class="outreach-dashboard">
+  <nav class="outreach-nav">
+    <%= link_to "Pipeline", pipeline_path, class: "nav-link" %>
+    <%= link_to "Reviews", reviews_path, class: "nav-link" %>
+    <%= link_to "Bulk Import", new_bulk_import_path, class: "nav-link nav-link--active" %>
+  </nav>
+
+  <div id="bulk_loader" class="bulk-loader" aria-hidden="true">
+    <div class="bulk-loader__spinner"></div>
+    <p>Importing prospects…</p>
+  </div>
+
+  <header class="outreach-header">
+    <h1>Bulk Import</h1>
+    <p>Paste URLs (one per line). New prospects will be queued for research.</p>
+  </header>
+
+  <% if flash[:alert] %><div class="flash flash--alert"><%= flash[:alert] %></div><% end %>
+
+  <%= form_with url: bulk_imports_path, method: :post, local: true, class: "bulk-form", id: "bulk_form" do %>
+    <div class="form-group">
+      <label for="urls">URLs (one per line)</label>
+      <p class="hint">Maximum 50 URLs per batch.</p>
+      <%= text_area_tag :urls, params[:urls], id: "urls", rows: 15, class: "form-input", placeholder: "https://example.com\nhttps://another-site.com\n..." %>
+    </div>
+    <%= submit_tag "Import & Start Research", class: "btn btn-primary", id: "bulk_submit" %>
+  <% end %>
+
+  <p class="back-link"><%= link_to "← Back to Pipeline", pipeline_path %></p>
+</div>
+
+<script>
+  (function() {
+    var form = document.getElementById('bulk_form');
+    var loader = document.getElementById('bulk_loader');
+    var submit = document.getElementById('bulk_submit');
+    if (form && loader && submit) {
+      form.addEventListener('submit', function() {
+        loader.classList.add('bulk-loader--visible');
+        loader.setAttribute('aria-hidden', 'false');
+        submit.disabled = true;
+      });
+    }
+  })();
+</script>

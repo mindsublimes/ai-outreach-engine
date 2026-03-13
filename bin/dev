@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+# Run web server + Solid Queue jobs (Procfile)
+exec "foreman", "start", "-f", "Procfile", *ARGV

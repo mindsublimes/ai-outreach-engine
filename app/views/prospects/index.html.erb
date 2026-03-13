@@ -1,0 +1,53 @@
+<div class="outreach-dashboard">
+  <nav class="outreach-nav">
+    <%= link_to "Pipeline", pipeline_path, class: "nav-link" %>
+    <%= link_to "Reviews", reviews_path, class: "nav-link" %>
+    <%= link_to "Bulk Import", new_bulk_import_path, class: "nav-link nav-link--active" %>
+  </nav>
+
+  <h1>Add Prospect</h1>
+  <p class="tagline">Add a single URL to queue research.</p>
+
+  <%= form_with url: prospects_path, method: :post, local: true, class: "url-form" do |f| %>
+    <%= f.text_field :url, placeholder: "https://example.com", class: "url-input" %>
+    <%= f.submit "Queue Research", class: "btn" %>
+  <% end %>
+
+  <% if flash[:notice] %>
+    <p class="flash notice"><%= flash[:notice] %></p>
+  <% end %>
+  <% if flash[:alert] %>
+    <p class="flash alert"><%= flash[:alert] %></p>
+  <% end %>
+
+  <h2>Prospects</h2>
+  <table class="prospects-table">
+    <thead>
+      <tr>
+        <th>URL</th>
+        <th>Status</th>
+        <th>Company</th>
+        <th>Notes</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @prospects.each do |p| %>
+        <tr>
+          <td><a href="<%= p.url %>" target="_blank" rel="noopener"><%= p.url.truncate(40) %></a></td>
+          <td><span class="status-badge status-<%= p.status %>"><%= p.status %></span></td>
+          <td><%= p.company_name&.truncate(25) %></td>
+          <td><%= p.failure_reason&.truncate(60) %></td>
+          <td>
+            <% if p.status == 'pending' %>
+              <%= button_to "Run Now", research_now_prospect_path(p), method: :post, class: "btn-small" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @prospects.empty? %>
+    <p class="empty">No prospects yet. Add a URL above or run <code>rake partners_dna:seed</code> to seed gold-standard partners.</p>
+  <% end %>
+</div>

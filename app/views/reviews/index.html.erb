@@ -1,0 +1,81 @@
+<div class="outreach-dashboard reviews-dashboard">
+  <nav class="outreach-nav">
+    <%= link_to "Pipeline", pipeline_path, class: "nav-link" %>
+    <%= link_to "Reviews", reviews_path, class: "nav-link nav-link--active" %>
+    <%= link_to "Bulk Import", new_bulk_import_path, class: "nav-link" %>
+  </nav>
+
+  <header class="outreach-header">
+    <h1>Outreach Reviews</h1>
+    <p>Prospects ready for review, approved, or drafted in Gmail. Edit and push to Gmail.</p>
+  </header>
+
+  <% if flash[:notice] %><div class="flash flash--notice"><%= flash[:notice] %></div><% end %>
+  <% if flash[:alert] %><div class="flash flash--alert"><%= flash[:alert] %></div><% end %>
+
+  <% if @prospects.empty? %>
+    <div class="outreach-empty">
+      <p>No prospects ready for review. Import URLs and run the pipeline to get started.</p>
+    </div>
+  <% else %>
+    <div class="reviews-layout">
+      <aside class="reviews-sidebar">
+        <% @prospects.each do |prospect| %>
+          <%= link_to reviews_path(id: prospect.id), class: "sidebar-item #{'sidebar-item--active' if @selected_prospect&.id == prospect.id}" do %>
+            <span class="sidebar-label"><%= prospect.display_label %></span>
+            <span class="status-badge status--<%= prospect.status %>"><%= prospect.status.humanize %></span>
+          <% end %>
+        <% end %>
+      </aside>
+
+      <main class="reviews-workspace">
+        <% if @selected_prospect %>
+          <%= form_with url: reviews_approve_path, method: :post, local: true, class: "reviews-form" do %>
+            <%= hidden_field_tag :id, @selected_prospect.id %>
+
+            <div class="reviews-context">
+              <h2><%= @selected_prospect.display_label %></h2>
+              <p><a href="<%= @selected_prospect.url %>" target="_blank" rel="noopener"><%= @selected_prospect.url %></a></p>
+              <% if @selected_prospect.first_name.present? || @selected_prospect.last_name.present? || @selected_prospect.job_title.present? %>
+                <p class="contact"><%= [@selected_prospect.first_name, @selected_prospect.last_name].compact.join(' ') %> <%= "(#{@selected_prospect.job_title})" if @selected_prospect.job_title.present? %></p>
+              <% end %>
+              <% if @selected_prospect.email.present? %>
+                <p class="email">To: <%= @selected_prospect.email %></p>
+              <% end %>
+              <div class="hook-block">
+                <label>Hook (Observation)</label>
+                <div class="hook-text"><%= @selected_prospect.observation.presence || "—" %></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="prospect_subject">Subject (editable)</label>
+              <%= text_field_tag "prospect[generated_email_subject]", @selected_prospect.generated_email_subject, id: "prospect_subject", class: "form-input", placeholder: "Email subject..." %>
+            </div>
+            <div class="form-group">
+              <label for="prospect_body">Email Body (editable)</label>
+              <%= text_area_tag "prospect[generated_email_body]", @selected_prospect.generated_email_body, id: "prospect_body", rows: 10, class: "form-input", placeholder: "Edit the generated email..." %>
+            </div>
+
+            <%= hidden_field_tag "prospect[status]", "approved" %>
+
+            <div class="form-actions">
+              <% if @selected_prospect.status == 'approved' || @selected_prospect.status == 'drafted_in_gmail' %>
+                <%= submit_tag "Approved", class: "btn btn-primary btn--disabled", disabled: true %>
+              <% else %>
+                <%= submit_tag "Approve & Mark Ready", class: "btn btn-primary" %>
+              <% end %>
+            </div>
+          <% end %>
+
+          <div class="push-section">
+            <%= button_to "Push to Gmail", reviews_push_to_gmail_path(@selected_prospect.id), method: :post, class: "btn btn-gmail", data: { turbo: false } %>
+            <% unless @selected_prospect.email.present? %>
+              <span class="hint">(Email required — run enrichment first)</span>
+            <% end %>
+          </div>
+        <% end %>
+      </main>
+    </div>
+  <% end %>
+</div>

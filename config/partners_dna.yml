@@ -1,0 +1,43 @@
+# GreenPal Partner Ecosystem DNA — Gold Standard Reference
+# High Priority: national-scale providers serving the green industry
+
+supplies:
+  - domain: mowmore.com
+    name: MowMore
+    category: supplies
+    dna_signals: [efficiency, network]
+    about_summary: Parts supplier for lawn care professionals.
+  - domain: ballard-inc.com
+    name: Ballard
+    category: supplies
+    dna_signals: [efficiency]
+    about_summary: Accessories for landscape and lawn care equipment.
+
+saas:
+  - domain: getjobber.com
+    name: Jobber
+    category: saas
+    dna_signals: [efficiency, growth]
+    about_summary: Operations software for field service businesses.
+  - domain: cyclecpa.com
+    name: CycleCPA
+    category: saas
+    dna_signals: [growth]
+    about_summary: Accounting for lawn care and landscaping pros.
+
+hardware:
+  - domain: zprotrailers.com
+    name: ZPro
+    category: hardware
+    dna_signals: [efficiency, network]
+    about_summary: Trailers for lawn care and landscaping.
+  - domain: stepranger.com
+    name: StepRanger
+    category: hardware
+    dna_signals: [efficiency]
+    about_summary: Equipment for landscape professionals.
+  - domain: ant-tool.com
+    name: ANT Tool
+    category: hardware
+    dna_signals: [efficiency]
+    about_summary: Professional-grade landscape tools.
