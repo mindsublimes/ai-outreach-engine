@@ -1,0 +1,24 @@
+<div class="outreach-dashboard">
+  <nav class="outreach-nav">
+    <%= link_to "Pipeline", pipeline_path, class: "nav-link" %>
+    <%= link_to "Reviews", reviews_path, class: "nav-link" %>
+    <%= link_to "Bulk Import", new_bulk_import_path, class: "nav-link" %>
+  </nav>
+
+  <header class="outreach-header">
+    <h1>Database Status</h1>
+    <p>Check and seed reference partners (no Shell needed on Render free tier).</p>
+  </header>
+
+  <div class="outreach-card" style="max-width: 400px;">
+    <p><strong>Reference partners:</strong> <%= @ref_count %></p>
+    <p><strong>Prospects:</strong> <%= @prospect_count %></p>
+
+    <% if @ref_count.zero? %>
+      <p class="seed-hint" style="margin-top: 1rem;">Seed gold-standard partners from config/partners_dna.yml:</p>
+      <%= button_to "Seed reference partners", pipeline_seed_path, method: :post, class: "btn btn-primary", style: "margin-top: 0.5rem;" %>
+    <% else %>
+      <p class="muted" style="margin-top: 1rem;">Already seeded. <%= link_to "Go to Pipeline", pipeline_path %> to import more.</p>
+    <% end %>
+  </div>
+</div>

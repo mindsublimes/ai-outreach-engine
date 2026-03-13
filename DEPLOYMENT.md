@@ -71,7 +71,8 @@
    - Web service (`ai-outreach-web`) — runs both web + background jobs (Solid Queue in Puma)
 
 6. **Seed partners** (first deploy only):
-   - Web service → Shell → `bin/rails partners_dna:seed`
+   - Free tier (no Shell): Visit Pipeline → click "Seed reference partners", or go to `/pipeline/seed` to check status and seed
+   - Paid tier: Web service → Shell → `bin/rails partners_dna:seed`
 
 ## URLs
 
@@ -93,3 +94,4 @@ Share the web URL with your client. They can:
 - **Build fails**: Check `bin/render-build.sh` is executable (`chmod +x bin/render-build.sh`)
 - **DB errors**: Ensure `DATABASE_URL` is set (from Blueprint database link)
 - **Jobs not running**: Ensure `SOLID_QUEUE_IN_PUMA=1` is set on the web service
+- **Gmail "Token expired or revoked"**: Run `bundle exec rake gmail:refresh_token` for instructions to get a new refresh token. Update `GMAIL_REFRESH_TOKEN` in Render and redeploy.

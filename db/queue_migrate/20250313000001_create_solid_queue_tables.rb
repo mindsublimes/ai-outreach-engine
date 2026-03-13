@@ -2,6 +2,8 @@
 
 class CreateSolidQueueTables < ActiveRecord::Migration[7.1]
   def change
+    return if table_exists?(:solid_queue_jobs)
+
     create_table :solid_queue_blocked_executions do |t|
       t.bigint :job_id, null: false
       t.string :queue_name, null: false

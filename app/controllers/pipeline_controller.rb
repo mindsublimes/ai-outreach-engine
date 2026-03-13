@@ -29,4 +29,18 @@ class PipelineController < ApplicationController
     Prospect.delete_all
     redirect_to pipeline_path, notice: "Cleared #{count} prospect(s) and all drafts."
   end
+
+  def seed_status
+    @ref_count = ReferencePartner.count
+    @prospect_count = Prospect.count
+    render :seed_status, layout: 'application'
+  end
+
+  def seed
+    Rake::Task['partners_dna:seed'].reenable
+    Rake::Task['partners_dna:seed'].invoke
+    refs = ReferencePartner.count
+    prospects = Prospect.count
+    redirect_to pipeline_path, notice: "Seeded #{refs} reference partners and #{prospects} prospects."
+  end
 end
