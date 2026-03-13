@@ -1,4 +1,5 @@
 # AI Outreach Engine - Render Blueprint
+# Single web service runs both Puma + Solid Queue (no separate worker = free)
 # Deploy: Connect repo, create Blueprint, set RAILS_MASTER_KEY + env vars
 
 databases:
@@ -23,19 +24,6 @@ services:
         value: production
       - key: WEB_CONCURRENCY
         value: 2
-
-  - type: worker
-    name: ai-outreach-jobs
-    runtime: ruby
-    plan: free
-    buildCommand: ./bin/render-build.sh
-    startCommand: bin/jobs start
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: ai-outreach-db
-          property: connectionString
-      - key: RAILS_MASTER_KEY
-        sync: false
-      - key: RAILS_ENV
-        value: production
+      # Run Solid Queue inside Puma (no separate worker service needed)
+      - key: SOLID_QUEUE_IN_PUMA
+        value: "1"
