@@ -26,12 +26,15 @@ test:
   database: storage/test.sqlite3
 
 
-# Production: uses PostgreSQL when DATABASE_URL is set (Render, Heroku, etc.)
-# Falls back to SQLite for local/docker production
+# Production: PostgreSQL via DATABASE_URL (Render, Heroku, etc.)
 production:
   primary:
+    adapter: postgresql
     url: <%= ENV["DATABASE_URL"] %>
     migrations_paths: db/migrate
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   queue:
+    adapter: postgresql
     url: <%= ENV["DATABASE_URL"] %>
     migrations_paths: db/queue_migrate
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
