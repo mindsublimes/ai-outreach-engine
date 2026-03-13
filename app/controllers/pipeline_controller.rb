@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
 class PipelineController < ApplicationController
+  PER_PAGE = 25
+
   def index
     recent = Prospect.where('created_at > ?', 30.days.ago)
-    @prospects = recent.order(created_at: :desc).limit(200)
     @status_counts = recent.group(:status).count
+    page = [params[:page].to_i, 1].max
+    @prospects = recent.order(created_at: :desc).limit(PER_PAGE).offset((page - 1) * PER_PAGE)
+    @total_count = recent.count
+    @total_pages = [(@total_count.to_f / PER_PAGE).ceil, 1].max
+    @current_page = page
+    @per_page = PER_PAGE
   end
 
   def retry
@@ -21,13 +28,6 @@ class PipelineController < ApplicationController
       Outreach::ResearchWorker.perform_later(prospect.id)
       redirect_to pipeline_path, notice: "Retrying research for #{prospect.url}"
     end
-  end
-
-  def clear
-    count = Prospect.count
-    OutreachDraft.delete_all
-    Prospect.delete_all
-    redirect_to pipeline_path, notice: "Cleared #{count} prospect(s) and all drafts."
   end
 
   def seed_status
