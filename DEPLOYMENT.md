@@ -70,9 +70,7 @@
    - PostgreSQL database (`ai-outreach-db`)
    - Web service (`ai-outreach-web`) — runs both web + background jobs (Solid Queue in Puma)
 
-6. **Seed partners** (first deploy only):
-   - Free tier (no Shell): Visit Pipeline → click "Seed reference partners", or go to `/pipeline/seed` to check status and seed
-   - Paid tier: Web service → Shell → `bin/rails partners_dna:seed`
+6. **Seed partners** (first deploy only): Use DBeaver or psql with the SQL from the project docs, or Shell → `bin/rails partners_dna:seed`
 
 ## URLs
 

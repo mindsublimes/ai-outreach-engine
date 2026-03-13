@@ -36,11 +36,6 @@
     <div class="outreach-empty">
       <p>No prospects in the pipeline.</p>
       <p><%= link_to "Import URLs", new_bulk_import_path %> to get started.</p>
-      <% if ReferencePartner.count.zero? %>
-        <p class="seed-hint">First time? Seed reference partners from config:</p>
-        <%= button_to "Seed reference partners", pipeline_seed_path, method: :post, class: "btn btn-primary" %>
-      <% end %>
-      <p class="muted" style="margin-top: 1rem;"><%= link_to "Check database status", pipeline_seed_status_path %></p>
     </div>
   <% else %>
     <div class="outreach-card pipeline-card">

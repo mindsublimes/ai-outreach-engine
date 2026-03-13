@@ -14,9 +14,6 @@ Rails.application.routes.draw do
 
   get 'pipeline', to: 'pipeline#index', as: :pipeline
   post 'pipeline/retry/:id', to: 'pipeline#retry', as: :pipeline_retry
-  get 'pipeline/seed', to: 'pipeline#seed_status', as: :pipeline_seed_status
-  post 'pipeline/seed', to: 'pipeline#seed', as: :pipeline_seed
-
   get 'reviews', to: 'reviews#index', as: :reviews
   post 'reviews/approve', to: 'reviews#approve', as: :reviews_approve
   post 'reviews/push_to_gmail/:id', to: 'reviews#push_to_gmail', as: :reviews_push_to_gmail
