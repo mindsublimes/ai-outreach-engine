@@ -1,0 +1,10 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "bundle install && bundle exec rails assets:precompile"
+  },
+  "deploy": {
+    "startCommand": "bin/rails db:prepare && SOLID_QUEUE_IN_PUMA=1 bin/rails server -b 0.0.0.0"
+  }
+}

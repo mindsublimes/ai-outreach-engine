@@ -10,9 +10,6 @@
     <p>Prospects ready for review, approved, or drafted in Gmail. Edit and push to Gmail.</p>
   </header>
 
-  <% if flash[:notice] %><div class="flash flash--notice"><%= flash[:notice] %></div><% end %>
-  <% if flash[:alert] %><div class="flash flash--alert"><%= flash[:alert] %></div><% end %>
-
   <% if @prospects.empty? %>
     <div class="outreach-empty">
       <p>No prospects ready for review. Import URLs and run the pipeline to get started.</p>

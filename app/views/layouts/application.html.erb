@@ -22,6 +22,27 @@
   </head>
 
   <body>
+    <% if flash[:notice] || flash[:alert] %>
+      <div id="flash-container" class="flash-wrapper">
+        <% if flash[:notice] %><div class="flash flash--notice" data-dismiss="5"><%= flash[:notice] %></div><% end %>
+        <% if flash[:alert] %><div class="flash flash--alert" data-dismiss="5"><%= flash[:alert] %></div><% end %>
+      </div>
+      <script>
+        (function() {
+          var els = document.querySelectorAll('#flash-container [data-dismiss]');
+          var sec = parseInt(document.querySelector('[data-dismiss]')?.dataset.dismiss || '5', 10) * 1000;
+          setTimeout(function() {
+            els.forEach(function(el) {
+              el.style.opacity = '0';
+              el.style.transition = 'opacity 0.3s';
+              setTimeout(function() { el.remove(); }, 300);
+            });
+            var container = document.getElementById('flash-container');
+            if (container && !container.querySelector('.flash')) container.remove();
+          }, sec);
+        })();
+      </script>
+    <% end %>
     <%= yield %>
   </body>
 </html>

@@ -15,8 +15,6 @@
     <p>Paste URLs (one per line). New prospects will be queued for research.</p>
   </header>
 
-  <% if flash[:alert] %><div class="flash flash--alert"><%= flash[:alert] %></div><% end %>
-
   <%= form_with url: bulk_imports_path, method: :post, local: true, class: "bulk-form", id: "bulk_form" do %>
     <div class="form-group">
       <label for="urls">URLs (one per line)</label>

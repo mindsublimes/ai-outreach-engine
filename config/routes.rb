@@ -14,6 +14,7 @@ Rails.application.routes.draw do
 
   get 'pipeline', to: 'pipeline#index', as: :pipeline
   post 'pipeline/retry/:id', to: 'pipeline#retry', as: :pipeline_retry
+  post 'pipeline/clear', to: 'pipeline#clear', as: :pipeline_clear
 
   get 'reviews', to: 'reviews#index', as: :reviews
   post 'reviews/approve', to: 'reviews#approve', as: :reviews_approve

@@ -9,7 +9,7 @@ class ReviewsController < ApplicationController
   def approve
     prospect = Prospect.find(params[:id])
     if prospect.update(prospect_params)
-      redirect_to reviews_path, notice: 'Changes saved.'
+      redirect_to reviews_path(id: prospect.id), notice: 'Changes saved.'
     else
       redirect_to reviews_path(id: prospect.id), alert: 'Could not save changes.'
     end
@@ -26,7 +26,7 @@ class ReviewsController < ApplicationController
     prospect.update!(status: 'drafted_in_gmail')
     email = svc.authenticated_email rescue nil
     notice = email.present? ? "Draft created! Check Gmail Drafts for #{email}" : 'Draft created in your Gmail account!'
-    redirect_to reviews_path, notice: notice
+    redirect_to reviews_path(id: prospect.id), notice: notice
   rescue Outreach::GmailService::Error => e
     redirect_to reviews_path(id: prospect.id), alert: "Gmail error: #{e.message}"
   rescue StandardError => e

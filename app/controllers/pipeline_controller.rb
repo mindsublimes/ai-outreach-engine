@@ -22,4 +22,11 @@ class PipelineController < ApplicationController
       redirect_to pipeline_path, notice: "Retrying research for #{prospect.url}"
     end
   end
+
+  def clear
+    count = Prospect.count
+    OutreachDraft.delete_all
+    Prospect.delete_all
+    redirect_to pipeline_path, notice: "Cleared #{count} prospect(s) and all drafts."
+  end
 end

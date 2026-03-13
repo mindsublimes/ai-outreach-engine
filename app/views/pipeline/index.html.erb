@@ -29,6 +29,10 @@
       <p class="refresh-hint">
         <span id="pipelineCountdown">3</span>s until refresh · <%= Time.current.strftime('%H:%M:%S') %>
       </p>
+    <% elsif processing_count == 0 && @prospects.any? %>
+      <div class="pipeline-clear-section">
+        <%= button_to "Clear all data", pipeline_clear_path, method: :post, class: "btn btn-clear", data: { turbo_confirm: "Delete all prospects and drafts? This cannot be undone." } %>
+      </div>
     <% end %>
   </header>
 
