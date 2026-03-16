@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_12_000003) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_16_062239) do
   create_table "outreach_drafts", force: :cascade do |t|
     t.integer "prospect_id", null: false
     t.string "subject", null: false
@@ -51,6 +51,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_000003) do
     t.text "signals_detected"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "accept_category"
     t.index ["b2b_b2c_status"], name: "index_prospects_on_b2b_b2c_status"
     t.index ["is_scalable"], name: "index_prospects_on_is_scalable"
     t.index ["track"], name: "index_prospects_on_track"
@@ -70,6 +71,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_000003) do
     t.text "dna_signals"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "perks_url"
     t.index ["category"], name: "index_reference_partners_on_category"
     t.index ["display_order"], name: "index_reference_partners_on_display_order"
     t.index ["domain"], name: "index_reference_partners_on_domain"

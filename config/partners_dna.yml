@@ -1,15 +1,18 @@
 # GreenPal Partner Ecosystem DNA — Gold Standard Reference
 # High Priority: national-scale providers serving the green industry
+# perks_url: GreenPal partner perks page for social proof in outreach emails
 
 supplies:
   - domain: mowmore.com
     name: MowMore
     category: supplies
+    perks_url: https://www.yourgreenpal.com/partners/perks/mowmore-2-discount
     dna_signals: [efficiency, network]
     about_summary: Parts supplier for lawn care professionals.
   - domain: ballard-inc.com
     name: Ballard
     category: supplies
+    perks_url: https://www.yourgreenpal.com/partners/perks/ballard
     dna_signals: [efficiency]
     about_summary: Accessories for landscape and lawn care equipment.
 
@@ -17,11 +20,13 @@ saas:
   - domain: getjobber.com
     name: Jobber
     category: saas
+    perks_url: https://www.yourgreenpal.com/partners/perks/jobber
     dna_signals: [efficiency, growth]
     about_summary: Operations software for field service businesses.
   - domain: cyclecpa.com
     name: CycleCPA
     category: saas
+    perks_url: https://www.yourgreenpal.com/partners/perks/cyclecpa
     dna_signals: [growth]
     about_summary: Accounting for lawn care and landscaping pros.
 
@@ -29,15 +34,18 @@ hardware:
   - domain: zprotrailers.com
     name: ZPro
     category: hardware
+    perks_url: https://www.yourgreenpal.com/partners/perks/zpro
     dna_signals: [efficiency, network]
     about_summary: Trailers for lawn care and landscaping.
   - domain: stepranger.com
     name: StepRanger
     category: hardware
+    perks_url: https://www.yourgreenpal.com/partners/perks/stepranger
     dna_signals: [efficiency]
     about_summary: Equipment for landscape professionals.
   - domain: ant-tool.com
     name: ANT Tool
     category: hardware
+    perks_url: https://www.yourgreenpal.com/partners/perks/ant-tool
     dna_signals: [efficiency]
     about_summary: Professional-grade landscape tools.

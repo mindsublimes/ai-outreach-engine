@@ -29,6 +29,7 @@ namespace :partners_dna do
         url = domain.start_with?('http') ? domain : "https://#{domain}"
         name = entry['name'].presence || domain
         category = entry['category'].presence || category_key.to_s
+        perks_url = entry['perks_url'].to_s.strip.presence
         dna_signals = Array(entry['dna_signals']).map(&:to_s)
         about_summary = entry['about_summary'].presence || "Gold standard #{category} partner."
 
@@ -37,6 +38,7 @@ namespace :partners_dna do
           domain: domain,
           name: name,
           category: category,
+          perks_url: perks_url,
           dna_signals: dna_signals,
           about_summary: about_summary,
           products_summary: about_summary,

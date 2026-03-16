@@ -309,6 +309,7 @@ module Outreach
         research_summary: extracted[:summary].presence || 'No data available.',
         observation: extracted[:observation],
         target_persona: extracted[:target_persona],
+        accept_category: extracted[:accept_category],
         company_name: prospect.company_name.presence || Outreach::UrlHelpers.extract_domain(prospect.url),
         research_failed: false,
         status: 'researched'
