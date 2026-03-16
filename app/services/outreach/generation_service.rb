@@ -63,30 +63,28 @@ module Outreach
 
       4. AUDIENCE — "We work with 65k lawn and landscape professionals nationwide." (or "We serve 65,000+...")
 
-      5. PARTNER HUB — Use short OR long variant:
-         - Short: "Inside GreenPal, we built a Partner Hub where vendors and organizations gain direct visibility to these operators."
-         - Long: "We built a Partner Hub inside GreenPal to list tools and services our vendors may want to discover. There is no cost to be included. If partners choose to offer a discount, we highlight it, otherwise, it is simply brand visibility inside the hub."
+      5. PARTNER HUB — Use short OR long variant (do NOT use both; do NOT repeat discount messaging):
+         - Short: "Inside GreenPal, we built a Partner Hub where vendors and organizations gain direct visibility to these operators. There is no cost to be listed." (Then add discount line in step 7 if desired.)
+         - Long: "We built a Partner Hub inside GreenPal to list tools and services our vendors may want to discover. There is no cost to be included. If partners choose to offer a discount, we highlight it, otherwise, it is simply brand visibility inside the hub." (Do NOT add the separate discount line — it would be redundant.)
 
-      6. SKEPTICISM — "There is no cost to be listed." or "There is no cost to be included." Include or close equivalent.
+      6. EXAMPLE PARTNER (include when reference partner is provided) — "One example partner is [Reference Partner Name]. Here's an example of what that looks like: [plain URL]"
+         - When using SHORT Partner Hub, you MAY add: "If you offer a member benefit or discount, we highlight it. If not, you still gain exposure." (Only add this when you did NOT already include discount phrasing in step 5.)
+         - NEVER repeat "If you offer a discount..." and "If partners choose to offer a discount..." in the same email.
 
-      7. EXAMPLE PARTNER (include when reference partner is provided) — "One example partner is [Reference Partner Name]." Include the perks URL as a plain URL (no Markdown): "Here's an example of what that looks like: https://..." — output the full URL so it's clickable in plain text email.
-
-      8. OPTIONAL DISCOUNT LINE — When relevant: "If you offer a member benefit or discount, we highlight it. If not, you still gain exposure."
-
-      9. CTA (mandatory) — MUST include the company name. Use one of:
+      7. CTA (mandatory) — MUST include the company display name (NOT the domain like workwave.com — use "WorkWave" or the brand name). Use one of:
          - "Would it make sense to feature [Company Name] the same way?"
          - "Would it make sense to feature [Company Name] similarly?"
          - "Would you want [Company Name] in front of the same audience?"
 
-      10. CLOSE — "Open to a brief call?" or "Open to a quick call?"
+      8. CLOSE — "Open to a brief call?" or "Open to a quick call?"
 
-      11. SIGNATURE:
+      9. SIGNATURE:
       Best,
       Gene Caballero
       Co-Founder | GreenPal
       www.yourgreenpal.com
 
-      SUBJECT LINE: "Possible fit between GreenPal and [Company Name]"
+      SUBJECT LINE: "Possible fit between GreenPal and [Company Name]" (use display name, not domain — e.g. "WorkWave" not "workwave.com")
 
       OUTPUT FORMAT (mandatory):
       SUBJECT: [Text]
@@ -116,7 +114,8 @@ module Outreach
         .gsub('[first_name]', first_name)
 
       body = strip_markdown_links(body)
-      body = ensure_cta_includes_company(body) if prospect.company_name.present? && !body.include?(prospect.company_name)
+      body = normalize_company_name_in_body(body)
+      body = ensure_cta_includes_company(body) if prospect.company_name.present? && !body.include?(company_display_name)
 
       prospect.generated_email_subject = subject.to_s.strip.presence
       prospect.generated_email_body = body
@@ -166,17 +165,34 @@ module Outreach
       }
     end
 
+    def company_display_name
+      raw = prospect.company_name.presence || prospect.domain.presence || ''
+      return 'your company' if raw.blank?
+
+      # Strip domain suffixes and convert to display name (e.g. workwave.com -> WorkWave)
+      name = raw.to_s.strip
+      name = name.sub(/\s*\([^)]*\)\s*\z/, '') # remove trailing (parenthetical)
+      name = name.gsub(/\b(\.com|\.net|\.io|\.co|\.org|\.us)\b/i, '')
+      name = name.gsub(/^https?:\/\//i, '').gsub(/^www\./i, '')
+      name = name.split('/').first.to_s.strip
+      name = name.gsub(/[-_](inc|llc|corp|co)\.?$/i, '').strip
+      name = name.gsub(/[-_]/, ' ').strip
+      return 'your company' if name.blank?
+
+      name.split(/\s+/).map(&:capitalize).join(' ')
+    end
+
     def build_prompt
       ref_info = reference_partner_info
       ref_name = ref_info[:name]
       ref_perks_url = ref_info[:perks_url]
-      company_name = prospect.company_name.presence || 'your company'
+      company_display = company_display_name
       signals_context = signals_context_for_prompt
 
       <<~PROMPT
         first_name: #{prospect.first_name.presence || 'there'}
         job_title: #{prospect.job_title.presence || 'N/A'}
-        company_name: #{company_name}
+        company_display_name: #{company_display} (use this in CTA and subject — NOT the raw domain like workwave.com)
 
         Observation (use for step 2 — be specific, no generic praise; prove we know them): #{prospect.observation}
 
@@ -187,10 +203,10 @@ module Outreach
         REFERENCE PARTNER (for social proof — include "One example partner is #{ref_name}." with link): #{ref_name}
         Perks URL: #{ref_perks_url}
 
-        CTA MUST include the company name: #{company_name}. Use one of: "Would it make sense to feature #{company_name} the same way?", "Would it make sense to feature #{company_name} similarly?", or "Would you want #{company_name} in front of the same audience?"
+        CTA MUST include the company display name: #{company_display}. Use one of: "Would it make sense to feature #{company_display} the same way?", "Would it make sense to feature #{company_display} similarly?", or "Would you want #{company_display} in front of the same audience?"
 
         Write the subject line and full email body following the structure. Start with "Hi [first_name]," using the first_name above.
-        Subject: "Possible fit between GreenPal and #{company_name}".
+        Subject: "Possible fit between GreenPal and #{company_display}".
         Include the reference partner (#{ref_name}) and perks URL as social proof. Use the plain URL (no Markdown): "Here's an example of what that looks like: #{ref_perks_url}" — do NOT use [text](url) format. End with the Gene Caballero signature.
         Return in this exact format:
         SUBJECT: [your subject line]
@@ -214,9 +230,30 @@ module Outreach
       text.gsub(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/, '\2')
     end
 
+    def normalize_company_name_in_body(body)
+      display = company_display_name
+      raw = prospect.company_name.presence || prospect.domain.presence || ''
+      return body if raw.blank? || display == raw || display == 'your company'
+
+      # Replace domain-style company name (e.g. workwave.com) with display name (WorkWave) in CTA
+      domain = prospect.domain.to_s
+      [raw, domain].uniq.reject(&:blank?).each do |to_replace|
+        next if to_replace == display
+        body = body.gsub(
+          /(Would it make sense to feature )#{Regexp.escape(to_replace)}( the same way\?| similarly\?)/i,
+          "\\1#{display}\\2"
+        )
+        body = body.gsub(
+          /(Would you want )#{Regexp.escape(to_replace)}( in front of the same audience\?)/i,
+          "\\1#{display}\\2"
+        )
+      end
+      body
+    end
+
     def ensure_cta_includes_company(body)
-      company = prospect.company_name
-      return body if company.blank? || body.include?(company)
+      display = company_display_name
+      return body if display == 'your company' || body.include?(display)
 
       lines = body.split("\n")
       cta_patterns = [
@@ -227,14 +264,14 @@ module Outreach
 
       lines.each_with_index do |line, i|
         cta_patterns.each do |pattern|
-          if line =~ pattern && !line.include?(company)
-            lines[i] = "Would it make sense to feature #{company} the same way?"
+          if line =~ pattern && !line.include?(display)
+            lines[i] = "Would it make sense to feature #{display} the same way?"
             return lines.join("\n")
           end
         end
       end
 
-      cta_insert = "\nWould it make sense to feature #{company} the same way?\n\nOpen to a brief call?\n\n"
+      cta_insert = "\nWould it make sense to feature #{display} the same way?\n\nOpen to a brief call?\n\n"
       if body =~ /(\n\s*Best,\s*\n)/i
         body.sub(/(\n\s*Best,\s*\n)/i, "#{cta_insert}\\1")
       else
@@ -264,8 +301,7 @@ module Outreach
     end
 
     def fallback_subject
-      company = prospect.company_name.presence || 'your company'
-      "Possible fit between GreenPal and #{company}"
+      "Possible fit between GreenPal and #{company_display_name}"
     end
 
     def openai_request(api_key, prompt)

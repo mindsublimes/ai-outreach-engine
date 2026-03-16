@@ -66,11 +66,29 @@
           <% end %>
 
           <div class="push-section">
-            <%= button_to "Push to Gmail", reviews_push_to_gmail_path(@selected_prospect.id), method: :post, class: "btn btn-gmail", data: { turbo: false } %>
+            <%= button_to "Push to Gmail", reviews_push_to_gmail_path(@selected_prospect.id), method: :post, class: "btn btn-gmail", form: { id: "push-to-gmail-form", data: { turbo: false } } %>
             <% unless @selected_prospect.email.present? %>
               <span class="hint">(Email required — run enrichment first)</span>
             <% end %>
           </div>
+          <div id="gmail-push-loader" class="gmail-push-loader" aria-hidden="true">
+            <div class="gmail-push-loader__spinner"></div>
+            <p>Pushing to Gmail…</p>
+          </div>
+          <script>
+            (function() {
+              var form = document.getElementById('push-to-gmail-form');
+              var loader = document.getElementById('gmail-push-loader');
+              if (form && loader) {
+                form.addEventListener('submit', function() {
+                  loader.classList.add('gmail-push-loader--visible');
+                  loader.setAttribute('aria-hidden', 'false');
+                  var btn = form.querySelector('[type="submit"]');
+                  if (btn) btn.disabled = true;
+                });
+              }
+            })();
+          </script>
         <% end %>
       </main>
     </div>
